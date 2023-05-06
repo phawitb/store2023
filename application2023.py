@@ -340,7 +340,7 @@ root = Tk()
 bigFont = Font(root=root.master,family="Helvetica",size="20",weight="bold",slant="roman",underline=0,overstrike=0)
 
 root.option_add("*Font", "Helvetica 20")
-f1 = Frame(root, bg="green")
+f1 = Frame(root, bg="red")
 f1.grid(row=0, column=0, columnspan=3)
 f2 = Frame(root,bg='red')
 f2.grid(row=1, column=0)
@@ -359,9 +359,17 @@ status.set('scan your products')
 total.set('Ready')
 
 
-Label(f1, text="Barcode", width=25).pack(side=LEFT,padx=10, pady=10)
 
-txt = Entry(f1, width=30, fg="green")
+# Label(f1, text="Barcode", width=25).pack(side=LEFT,padx=10, pady=10)
+
+# txt = Entry(f1, width=30, fg="green")
+# txt.insert(END, "")
+# txt.focus_set()  #click...................
+# txt.pack(side=LEFT,padx=10, pady=10)
+
+Label(f1, fg="white",bg="red",font= ('Helvetica 50 bold'),text="Deep Store", width=23).pack(side=LEFT,padx=5, pady=5)
+
+txt = Entry(f1, width=30, fg="red",bg='red')
 txt.insert(END, "")
 txt.focus_set()  #click...................
 txt.pack(side=LEFT,padx=10, pady=10)
@@ -369,7 +377,6 @@ txt.pack(side=LEFT,padx=10, pady=10)
 btn = Button(f1, text="ADD", bg="gold")
 btn.pack()
 btn.bind("<Button-1>", on_click)
-
 
 Menu = []
 Shortcuts = Shortcut()
@@ -401,7 +408,8 @@ for i,menu in enumerate(Menu):
         bg='red'
     else:
         btn_detail = 'notset'
-    mbtn = Button(f2, width=13,height=2,fg=fg,bg=bg,text=menu,font=bigFont,command=lambda m=btn_detail: on_click2(m))
+ 
+    mbtn = Button(f2, width=11,height=2,fg=fg,bg=bg,text=menu,font=bigFont,command=lambda m=btn_detail: on_click2(m))
     mbtn.grid(row=i//2, column=i%2, padx=5, pady=5)
 
 # Label(f3, text='Products',justify="left").pack(anchor=W)
@@ -413,6 +421,7 @@ table_price = StringVar()
 Label(f3, textvariable=table_name,justify=LEFT).pack(side=LEFT,anchor=N)
 Label(f3, textvariable=table_amount).pack(side=LEFT,anchor=N)
 Label(f3, textvariable=table_price).pack(side=LEFT,anchor=N)
+
     
 img = Label(f4)
 img.pack()
@@ -420,6 +429,7 @@ update_img('scanproduct')
 
 Label(f4, textvariable=total,fg='red',bg='white',font= ('Helvetica 40 bold')).pack(fill=X,padx=10, pady=10)
 Label(f5, textvariable=status,fg='blue',font= ('Helvetica 30 bold')).pack(fill=X,padx=10, pady=5)
+
 
 root.bind('<Return>',on_click)
 # root.bind("<->", on_click('DELETE'))
