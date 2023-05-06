@@ -38,6 +38,6 @@ else
 
     sleep 5
 
-    cd store2023 && bash run.sh
+    cd store2023 && python3 application2023.py
 
 fi
