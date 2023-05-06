@@ -367,7 +367,7 @@ total.set('Ready')
 # txt.focus_set()  #click...................
 # txt.pack(side=LEFT,padx=10, pady=10)
 
-Label(f1, fg="white",bg="red",font= ('Helvetica 40 bold'),text="Deep Store", width=35).pack(side=LEFT,padx=5, pady=5)
+Label(f1, fg="yellow",bg="red",font= ('Helvetica 40 bold'),text="Deep Store", width=35).pack(side=LEFT,padx=5, pady=5)
 
 txt = Entry(f1, width=30, fg="red",bg='red')
 txt.insert(END, "")
