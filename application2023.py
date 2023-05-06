@@ -367,21 +367,21 @@ total.set('Ready')
 # txt.focus_set()  #click...................
 # txt.pack(side=LEFT,padx=10, pady=10)
 
-Label(f1, fg="white",bg="red",font= ('Helvetica 50 bold'),text="Deep Store", width=23).pack(side=LEFT,padx=5, pady=5)
+Label(f1, fg="white",bg="red",font= ('Helvetica 40 bold'),text="Deep Store", width=35).pack(side=LEFT,padx=5, pady=5)
 
 txt = Entry(f1, width=30, fg="red",bg='red')
 txt.insert(END, "")
 txt.focus_set()  #click...................
 txt.pack(side=LEFT,padx=10, pady=10)
 
-btn = Button(f1, text="ADD", bg="gold")
+btn = Button(f1, text="ADD", bg="red",fg="red",highlightthickness=0)
 btn.pack()
 btn.bind("<Button-1>", on_click)
 
 Menu = []
 Shortcuts = Shortcut()
 print('Shortcuts',Shortcuts)
-for i in range(18):
+for i in range(16):
     if str(i+1) in Shortcuts.keys():
         Menu.append(Shortcuts[str(i+1)]['name'])
     else:
@@ -409,7 +409,7 @@ for i,menu in enumerate(Menu):
     else:
         btn_detail = 'notset'
  
-    mbtn = Button(f2, width=11,height=2,fg=fg,bg=bg,text=menu,font=bigFont,command=lambda m=btn_detail: on_click2(m))
+    mbtn = Button(f2, width=14,height=2,fg=fg,bg=bg,text=menu,font=bigFont,command=lambda m=btn_detail: on_click2(m))
     mbtn.grid(row=i//2, column=i%2, padx=5, pady=5)
 
 # Label(f3, text='Products',justify="left").pack(anchor=W)
