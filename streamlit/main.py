@@ -35,6 +35,9 @@ def all_addstock_exist(addstock_df):
   
 def update_current_stock(barcode,amount):
   ref = db.collection(u'stocks').document('current')
+  if str(amount) == 'nan':
+    amount = 0
+  print('amount',amount,type(amount))
   try:
     ref.update({barcode:ref.get().to_dict()[barcode]+int(amount)})
   except:
@@ -108,7 +111,9 @@ def topup_db(total,customer_id,balance,time_now,date_now):
     doc_ref.update({f'{str(date_now)}.{str(time_now)}': Historys})
   except:
     c = {}
-    c[f'{str(date_now)}.{str(time_now)}'] = Historys
+    c[str(date_now)] = {
+        str(time_now) : Historys
+    }
     doc_ref.set(c)
 
 # topup_db(10,'7986925784557',balance)
