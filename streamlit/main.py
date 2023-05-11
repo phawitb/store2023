@@ -222,6 +222,7 @@ try:
     
 
     st.write("## Current Stock")
+    df_stock = df_stock.applymap(str)
     st.write(df_stock)
 except:
     pass
