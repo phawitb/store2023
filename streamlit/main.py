@@ -256,7 +256,7 @@ if st.button('Add Money'):
         except:
             B.append(None)
     addmoney_df['barcode'] = B
-    st.write(addmoney_df)
+    st.write(addmoney_df.to_html(escape=False), unsafe_allow_html=True)
 
     sta = add_money(addmoney_df)
     st.write(sta,time.time())
@@ -363,7 +363,7 @@ if st.button('Update Shortcut'):
             X.append(None)
     df_shortcut['barcode'] = X
     # df_shortcut['barcode'] = df_shortcut['barcode'].apply(str)
-    st.write(df_shortcut)
+    st.write(df_shortcut.to_html(escape=False), unsafe_allow_html=True)
     C = {}
     for index, row in df_shortcut.iterrows():
         print("row['barcode']",row['barcode'],type(row['barcode']))
