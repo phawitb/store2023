@@ -7,7 +7,7 @@
 
 ## Deploy
 ##### pip freeze > requirements.txt
-##### https://share.streamlit.io/
+##### https://share.streamlit.io/ >> login with github
 
 
 
