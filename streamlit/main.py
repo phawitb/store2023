@@ -223,8 +223,8 @@ try:
 
     st.write("## Current Stock")
     #df_stock = df_stock.applymap(str)
-    df_stock = df_stock.drop(columns=['barcode'])
-    st.write(df_stock)
+    #df_stock = df_stock.drop(columns=['barcode'])
+    st.write(df_stock.to_html(escape=False), unsafe_allow_html=True)
 except:
     pass
 ##----------------------------------------------------------------------
