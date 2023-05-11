@@ -3,7 +3,7 @@
 
 ## Sever
 #### cd streamlit  
-##### streamlit run main.py  
+#### streamlit run main.py  
 
 ## Deploy
 ##### pip freeze > requirements.txt
