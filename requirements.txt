@@ -71,4 +71,4 @@ zipp==3.15.0
 pillow
 pytesseract==0.3.8
 regex==2020.10.28
-opencv-python
+opencv-python==4.7.0
