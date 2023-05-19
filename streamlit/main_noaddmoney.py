@@ -222,8 +222,9 @@ try:
     
 
     st.write("## Current Stock")
-    df_stock = df_stock.applymap(str)
-    st.write(df_stock)
+    #df_stock = df_stock.applymap(str)
+    #df_stock = df_stock.drop(columns=['barcode'])
+    st.write(df_stock.to_html(escape=False), unsafe_allow_html=True)
 except:
     pass
 ##----------------------------------------------------------------------
@@ -232,7 +233,7 @@ try:
     df_balance = df_balance.sort_values(["name"])  #,ascending=False
 
     st.write("## All Balance")
-    st.write(df_balance)
+    st.write(df_balance.to_html(escape=False), unsafe_allow_html=True)
 except:
     pass
 
@@ -255,7 +256,7 @@ except:
 #         except:
 #             B.append(None)
 #     addmoney_df['barcode'] = B
-#     st.write(addmoney_df)
+#     st.write(addmoney_df.to_html(escape=False), unsafe_allow_html=True)
 
 #     sta = add_money(addmoney_df)
 #     st.write(sta,time.time())
@@ -270,7 +271,7 @@ if st.button('Add Stock'):
     url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
     addstock_df = pd.read_csv(url)
     addstock_df['barcode'] = addstock_df['barcode'].apply(str)
-    st.write(addstock_df)
+    st.write(addstock_df.to_html(escape=False), unsafe_allow_html=True)
 
     if all_addstock_exist(addstock_df):
         print('all_addstock_exist')
@@ -308,7 +309,7 @@ if st.button('Update Product'):
     df_products['barcode'] = df_products['barcode'].apply(str)
     # df_products = df_products.drop(['amount'], axis='columns', inplace=True)
     df_products = df_products.drop(columns=['amount'])
-    st.write(df_products)
+    st.write(df_products.to_html(escape=False), unsafe_allow_html=True)
 
     for index, row in df_products.iterrows():
         print(str(row['barcode']),row['name'],row['price'])
@@ -337,7 +338,7 @@ if st.button('Update Customers'):
             print(x,type(x))
             B.append(None)
     df_customers['barcode'] = B
-    st.write(df_customers)
+    st.write(df_customers.to_html(escape=False), unsafe_allow_html=True)
 
     for index, row in df_customers.iterrows():
         print(str(int(row['barcode'])),row['name'])
@@ -362,7 +363,7 @@ if st.button('Update Shortcut'):
             X.append(None)
     df_shortcut['barcode'] = X
     # df_shortcut['barcode'] = df_shortcut['barcode'].apply(str)
-    st.write(df_shortcut)
+    st.write(df_shortcut.to_html(escape=False), unsafe_allow_html=True)
     C = {}
     for index, row in df_shortcut.iterrows():
         print("row['barcode']",row['barcode'],type(row['barcode']))
