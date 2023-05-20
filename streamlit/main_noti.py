@@ -391,7 +391,7 @@ if st.button('Check Stock'):
     st.write(report_df)
     st.write(msg)
 
-    noti_df(report_df,40)
+    #noti_df(report_df,40)
     linenotify(msg,None)
 
 
