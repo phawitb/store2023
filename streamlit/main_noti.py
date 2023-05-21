@@ -74,11 +74,17 @@ def noti_addstock_df(report_df,n_split):
     LL = []
     for i in range(x):
         print(i)
-
+        
         df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
         L = ''
         for i, row in df1.iterrows():
-            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {row['amount']}"
+            n = row['amount']
+            if str(n) == 'nan':
+                n = 0
+            else:
+                n = int(n)
+
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {n}"
         LL.append(L)
 
     #     dfi.export(df1,"img_split.png",max_rows=-1)
@@ -103,14 +109,22 @@ def noti_addmoney_df(report_df,n_split):
 
         df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
         L = ''
+
+        n = row['money']
+        N = 0
+        if str(n) == 'nan':
+            n = 0
+        else:
+            N += float(n)
+        
         for i, row in df1.iterrows():
-            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {row['money']}"
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {n}"
         LL.append(L)
 
     #     dfi.export(df1,"img_split.png",max_rows=-1)
 
     #     linenotify(f"{i+1}/{x}","df1.png")
-    linenotify(f"Add money complete! {sum(report_df['money'])}",None)
+    linenotify(f"Add money complete! {N}",None)
     for L in LL:
         linenotify(L,None)
 
