@@ -104,20 +104,20 @@ def noti_addmoney_df(report_df,n_split):
         x = int(n/n_split) + 1
 
     LL = []
+    N = 0
+    report_df = report_df.iloc[:-1 , :]
     for i in range(x):
         print(i)
 
         df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
         L = ''
-
-        n = row['money']
-        N = 0
-        if str(n) == 'nan':
-            n = 0
-        else:
-            N += float(n)
         
         for i, row in df1.iterrows():
+            n = row['money']
+            if str(n) == 'nan':
+                n = 0
+            else:
+                N += float(n)
             L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {n}"
         LL.append(L)
 
