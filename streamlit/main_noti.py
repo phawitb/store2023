@@ -62,7 +62,7 @@ def linenotify(message,img_path):
 # linenotify(message,'streamlit/img/IMG_4929.JPG')
 # linenotify(message,None)
 
-def noti_df(report_df,n_split):
+def noti_df_report_df(report_df,n_split):
     n = report_df.shape[0]
     n_split = 40
     if n%n_split == 0:
@@ -428,7 +428,7 @@ if st.button('Check Stock'):
     st.write(report_df)
     st.write(msg)
 
-    #noti_df(report_df,40)
+    noti_df_report_df(report_df,40)
     linenotify(msg,None)
 
 
