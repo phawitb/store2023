@@ -3,10 +3,185 @@ import pandas as pd
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-import pandas as pd
 # from datetime import datetime
 from datetime import datetime, timezone, timedelta
 import time
+import requests
+import numpy as np
+import dataframe_image as dfi
+
+def cal_error_stock(df_stock,addstock_df):
+    addstock_df = addstock_df.dropna(axis=1, how='all')
+    
+    last_date = list(addstock_df.columns)[-1]
+    report_df = addstock_df[['barcode','name','price',last_date]]
+    X = []
+    for index, row in report_df.iterrows():
+    #     print(row['barcode'])
+        try:
+            X.append(int(df_stock[df_stock['barcode'] == str(row['barcode'])]['amount']))
+        except:
+            print(row['barcode'])
+            X.append(0)
+    report_df['checked_stock'] = X
+    report_df['error'] = report_df['checked_stock'] - report_df[last_date]
+
+    error_all = sum(report_df['error']*report_df['price'])
+
+    # report_df_noperson = pd.DataFrame()
+    isperson = []
+    for index, row in report_df.iterrows():
+        if '_' not in row['name']:
+            isperson.append(True)
+        else:
+            isperson.append(False)
+
+    report_df_noperson = report_df[isperson]
+    # report_df_noperson
+    report_df_noperson['error'] = report_df_noperson['checked_stock'] - report_df_noperson[last_date]
+
+    error_no_person = sum(report_df_noperson['error']*report_df_noperson['price'])
+    
+    return report_df,error_all,error_no_person
+
+
+def linenotify(message,img_path):
+    url = 'https://notify-api.line.me/api/notify'
+    token = 'eksfQt5hl807nYbMMOmru9XYHn7LAPA47ql9DP5Zwdz' # Line Notify Token
+    data = {'message': message}
+    headers = {'Authorization':'Bearer ' + token}
+    session = requests.Session()
+    
+    if img_path:
+        img = {'imageFile': open(img_path,'rb')} #Local picture File
+        session_post = session.post(url, headers=headers, files=img, data =data)
+    else:
+        session_post = session.post(url, headers=headers, data =data)
+    print(session_post.text) 
+# message = 'Hello Python' #Set your message here!
+# linenotify(message,'streamlit/img/IMG_4929.JPG')
+# linenotify(message,None)
+
+
+def noti_addstock_df(report_df,n_split):
+    n = report_df.shape[0]
+    n_split = 40
+    if n%n_split == 0:
+        x = int(n/n_split)
+    else:
+        x = int(n/n_split) + 1
+
+    LL = []
+    for i in range(x):
+        print(i)
+        
+        df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
+        L = ''
+        for i, row in df1.iterrows():
+            n = row['amount']
+            if str(n) == 'nan':
+                n = 0
+            else:
+                n = int(n)
+
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {n}"
+        LL.append(L)
+
+    #     dfi.export(df1,"img_split.png",max_rows=-1)
+
+    #     linenotify(f"{i+1}/{x}","df1.png")
+    linenotify(f'Add Stock complete!',None)
+    for L in LL:
+        linenotify(L,None)
+
+
+def noti_addmoney_df(report_df,n_split):
+    n = report_df.shape[0]
+    n_split = 40
+    if n%n_split == 0:
+        x = int(n/n_split)
+    else:
+        x = int(n/n_split) + 1
+
+    LL = []
+    N = 0
+    report_df = report_df.iloc[:-1 , :]
+    for i in range(x):
+        print(i)
+
+        df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
+        L = ''
+        
+        for i, row in df1.iterrows():
+            n = row['money']
+            if str(n) == 'nan':
+                n = 0
+            else:
+                N += float(n)
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {n}"
+        LL.append(L)
+
+    #     dfi.export(df1,"img_split.png",max_rows=-1)
+
+    #     linenotify(f"{i+1}/{x}","df1.png")
+    linenotify(f"Add money complete! {N}",None)
+    for L in LL:
+        linenotify(L,None)
+
+def noti_report_df(report_df,n_split):
+    n = report_df.shape[0]
+    n_split = 40
+    if n%n_split == 0:
+        x = int(n/n_split)
+    else:
+        x = int(n/n_split) + 1
+
+    LL = []
+    for i in range(x):
+        print(i)
+
+        df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
+        L = ''
+        for i, row in df1.iterrows():
+            if int(row['error']) > 0:
+                s = '+'
+                ss = '🟢'
+            elif int(row['error']) < 0:
+                s = ''
+                ss = '🔴'
+            else:
+                s = ''
+                ss = ''
+
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {s}{row['error']}{ss}"
+        LL.append(L)
+
+    #     dfi.export(df1,"img_split.png",max_rows=-1)
+
+    #     linenotify(f"{i+1}/{x}","df1.png")
+    linenotify(f'Check Stock \nError_no_person: {error_no_person} \nError_All: {error_all}',None)
+    for L in LL:
+        linenotify(L,None)
+
+
+
+# def noti_df(report_df,n_split):
+#     n = report_df.shape[0]
+# #     n_split = 40
+#     if n%n_split == 0:
+#         x = int(n/n_split)
+#     else:
+#         x = int(n/n_split) + 1
+
+#     for i in range(x):
+#         print(i)
+
+#         df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
+#         dfi.export(df1,"img_split.png",max_rows=-1)
+
+#         linenotify(f"{i+1}/{x}","img_split.png")
+    
+
 
 def update_shortcut(C):
   print(C)
@@ -222,9 +397,8 @@ try:
     
 
     st.write("## Current Stock")
-    #df_stock = df_stock.applymap(str)
-    #df_stock = df_stock.drop(columns=['barcode'])
-    st.write(df_stock.to_html(escape=False), unsafe_allow_html=True)
+    df_stock = df_stock.applymap(str)
+    st.write(df_stock)
 except:
     pass
 ##----------------------------------------------------------------------
@@ -233,12 +407,12 @@ try:
     df_balance = df_balance.sort_values(["name"])  #,ascending=False
 
     st.write("## All Balance")
-    st.write(df_balance.to_html(escape=False), unsafe_allow_html=True)
+    st.write(df_balance)
 except:
     pass
 
 
-# ##----------------------------------------------------------------------
+##----------------------------------------------------------------------
 # st.write('***')
 
 # st.write('## Add Money')
@@ -256,13 +430,17 @@ except:
 #         except:
 #             B.append(None)
 #     addmoney_df['barcode'] = B
-#     st.write(addmoney_df.to_html(escape=False), unsafe_allow_html=True)
+#     st.write(addmoney_df)
 
 #     sta = add_money(addmoney_df)
 #     st.write(sta,time.time())
 #     st.write(f'Clear data -->{sheet_url}')
 
-# ##----------------------------------------------------------------------
+#     noti_addmoney_df(addmoney_df,40)
+#     # linenotify(f"complete! Add money = {sum(addmoney_df['money'])}",None)
+
+
+##----------------------------------------------------------------------
 st.write('## Add Stock')
 sheet_url = 'https://docs.google.com/spreadsheets/d/1FWYRTRhGqz4XfE0SXrMNhtzKLfhcMLxgCkA36iRiEHo/edit#gid=0'
 st.write(sheet_url)
@@ -271,7 +449,7 @@ if st.button('Add Stock'):
     url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
     addstock_df = pd.read_csv(url)
     addstock_df['barcode'] = addstock_df['barcode'].apply(str)
-    st.write(addstock_df.to_html(escape=False), unsafe_allow_html=True)
+    st.write(addstock_df)
 
     if all_addstock_exist(addstock_df):
         print('all_addstock_exist')
@@ -291,9 +469,35 @@ if st.button('Add Stock'):
         update_history_stock(H)
         st.write('complete! Add Stock')
         st.write(f'Clear data -->{sheet_url}')
+
+        noti_addstock_df(addstock_df,40)
+        # linenotify(f"complete! Add Stock",None)
+
     else:
         print('add stock not match')
         st.write('add stock not match -->please update product')
+
+st.write('***')
+
+st.write('## Check Stock')
+sheet_url = 'https://docs.google.com/spreadsheets/d/1FWYRTRhGqz4XfE0SXrMNhtzKLfhcMLxgCkA36iRiEHo/edit#gid=0'
+st.write(sheet_url)
+if st.button('Check Stock'):
+    # sheet_url = 'https://docs.google.com/spreadsheets/d/1FWYRTRhGqz4XfE0SXrMNhtzKLfhcMLxgCkA36iRiEHo/edit#gid=0'
+    url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
+    addstock_df = pd.read_csv(url)
+
+    report_df,error_all,error_no_person = cal_error_stock(df_stock,addstock_df)
+
+    msg = f'error_all: {error_all}\n error_no_person: {error_no_person}'
+
+    st.write(report_df)
+    st.write(msg)
+
+    noti_report_df(report_df,40)
+    # linenotify(msg,None)
+
+
 
 st.write('***')
 
@@ -309,13 +513,16 @@ if st.button('Update Product'):
     df_products['barcode'] = df_products['barcode'].apply(str)
     # df_products = df_products.drop(['amount'], axis='columns', inplace=True)
     df_products = df_products.drop(columns=['amount'])
-    st.write(df_products.to_html(escape=False), unsafe_allow_html=True)
+    st.write(df_products)
 
     for index, row in df_products.iterrows():
         print(str(row['barcode']),row['name'],row['price'])
         update_products(str(row['barcode']),row['name'],int(row['price']))
 
     st.write('update_products complete!')
+
+    # noti_df(report_df,40)
+    linenotify('update_products complete!',None)
 
 ##----------------------------------------------------------------------
 st.write('## Update Customers')
@@ -338,12 +545,16 @@ if st.button('Update Customers'):
             print(x,type(x))
             B.append(None)
     df_customers['barcode'] = B
-    st.write(df_customers.to_html(escape=False), unsafe_allow_html=True)
+    st.write(df_customers)
 
     for index, row in df_customers.iterrows():
         print(str(int(row['barcode'])),row['name'])
         update_customers(str(row['barcode']),row['name'])
     st.write('complete! Update Customers')
+
+    # noti_df(report_df,40)
+    linenotify('complete! Update Customers',None)
+
 
 ##----------------------------------------------------------------------
 
@@ -363,7 +574,7 @@ if st.button('Update Shortcut'):
             X.append(None)
     df_shortcut['barcode'] = X
     # df_shortcut['barcode'] = df_shortcut['barcode'].apply(str)
-    st.write(df_shortcut.to_html(escape=False), unsafe_allow_html=True)
+    st.write(df_shortcut)
     C = {}
     for index, row in df_shortcut.iterrows():
         print("row['barcode']",row['barcode'],type(row['barcode']))
@@ -373,6 +584,8 @@ if st.button('Update Shortcut'):
     print('C',C)
     update_shortcut(C)
     st.write('complete! Update Shortcut complete')
+    # noti_df(report_df,40)
+    linenotify('complete! Update Shortcut complete',None)
 
 
     # if st.button('Add Money'):
