@@ -62,7 +62,59 @@ def linenotify(message,img_path):
 # linenotify(message,'streamlit/img/IMG_4929.JPG')
 # linenotify(message,None)
 
-def noti_df_report_df(report_df,n_split):
+
+def noti_addstock_df(report_df,n_split):
+    n = report_df.shape[0]
+    n_split = 40
+    if n%n_split == 0:
+        x = int(n/n_split)
+    else:
+        x = int(n/n_split) + 1
+
+    LL = []
+    for i in range(x):
+        print(i)
+
+        df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
+        L = ''
+        for i, row in df1.iterrows():
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {row['amount']}"
+        LL.append(L)
+
+    #     dfi.export(df1,"img_split.png",max_rows=-1)
+
+    #     linenotify(f"{i+1}/{x}","df1.png")
+    linenotify(f'Add Stock complete!',None)
+    for L in LL:
+        linenotify(L,None)
+
+
+def noti_addmoney_df(report_df,n_split):
+    n = report_df.shape[0]
+    n_split = 40
+    if n%n_split == 0:
+        x = int(n/n_split)
+    else:
+        x = int(n/n_split) + 1
+
+    LL = []
+    for i in range(x):
+        print(i)
+
+        df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
+        L = ''
+        for i, row in df1.iterrows():
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {row['money']}"
+        LL.append(L)
+
+    #     dfi.export(df1,"img_split.png",max_rows=-1)
+
+    #     linenotify(f"{i+1}/{x}","df1.png")
+    linenotify(f"Add money complete! {sum(report_df['money'])}",None)
+    for L in LL:
+        linenotify(L,None)
+
+def noti_report_df(report_df,n_split):
     n = report_df.shape[0]
     n_split = 40
     if n%n_split == 0:
@@ -370,8 +422,8 @@ if st.button('Add Money'):
     st.write(sta,time.time())
     st.write(f'Clear data -->{sheet_url}')
 
-    noti_df(addmoney_df,40)
-    linenotify(f"complete! Add money = {sum(addmoney_df['money'])}",None)
+    noti_addmoney_df(addmoney_df,40)
+    # linenotify(f"complete! Add money = {sum(addmoney_df['money'])}",None)
 
 
 ##----------------------------------------------------------------------
@@ -404,8 +456,8 @@ if st.button('Add Stock'):
         st.write('complete! Add Stock')
         st.write(f'Clear data -->{sheet_url}')
 
-        noti_df(addstock_df,40)
-        linenotify(f"complete! Add Stock",None)
+        noti_addstock_df(addstock_df,40)
+        # linenotify(f"complete! Add Stock",None)
 
     else:
         print('add stock not match')
@@ -428,8 +480,8 @@ if st.button('Check Stock'):
     st.write(report_df)
     st.write(msg)
 
-    noti_df_report_df(report_df,40)
-    linenotify(msg,None)
+    noti_report_df(report_df,40)
+    # linenotify(msg,None)
 
 
 
