@@ -64,19 +64,56 @@ def linenotify(message,img_path):
 
 def noti_df(report_df,n_split):
     n = report_df.shape[0]
-#     n_split = 40
+    n_split = 40
     if n%n_split == 0:
         x = int(n/n_split)
     else:
         x = int(n/n_split) + 1
 
+    LL = []
     for i in range(x):
         print(i)
 
         df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
-        dfi.export(df1,"img_split.png",max_rows=-1)
+        L = ''
+        for i, row in df1.iterrows():
+            if int(row['error']) > 0:
+                s = '+'
+                ss = '🟢'
+            elif int(row['error']) < 0:
+                s = ''
+                ss = '🔴'
+            else:
+                s = ''
+                ss = ''
 
-        linenotify(f"{i+1}/{x}","img_split.png")
+            L += f"\n{i+1}[{str(row['barcode'])[-4:]}] {row['name'].replace(' ','')[:8]}= {s}{row['error']}{ss}"
+        LL.append(L)
+
+    #     dfi.export(df1,"img_split.png",max_rows=-1)
+
+    #     linenotify(f"{i+1}/{x}","df1.png")
+    linenotify(f'Check Stock \nError_no_person: {error_no_person} \nError_All: {error_all}',None)
+    for L in LL:
+        linenotify(L,None)
+
+
+
+# def noti_df(report_df,n_split):
+#     n = report_df.shape[0]
+# #     n_split = 40
+#     if n%n_split == 0:
+#         x = int(n/n_split)
+#     else:
+#         x = int(n/n_split) + 1
+
+#     for i in range(x):
+#         print(i)
+
+#         df1 = report_df.iloc[i*n_split:(i+1)*n_split,:]
+#         dfi.export(df1,"img_split.png",max_rows=-1)
+
+#         linenotify(f"{i+1}/{x}","img_split.png")
     
 
 
