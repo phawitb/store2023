@@ -37,10 +37,11 @@ def cal_error_stock(df_stock,addstock_df):
             isperson.append(False)
 
     report_df_noperson = report_df[isperson]
-    # report_df_noperson
     report_df_noperson['error'] = report_df_noperson['checked_stock'] - report_df_noperson[last_date]
 
     error_no_person = sum(report_df_noperson['error']*report_df_noperson['price'])
+    
+    report_df['error'] = report_df['error'].astype(int)
     
     return report_df,error_all,error_no_person
 
@@ -449,6 +450,8 @@ if st.button('Add Stock'):
     url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
     addstock_df = pd.read_csv(url)
     addstock_df['barcode'] = addstock_df['barcode'].apply(str)
+    addstock_df = addstock_df.fillna(0)
+
     st.write(addstock_df)
 
     if all_addstock_exist(addstock_df):
@@ -486,6 +489,8 @@ if st.button('Check Stock'):
     # sheet_url = 'https://docs.google.com/spreadsheets/d/1FWYRTRhGqz4XfE0SXrMNhtzKLfhcMLxgCkA36iRiEHo/edit#gid=0'
     url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
     addstock_df = pd.read_csv(url)
+    addstock_df['barcode'] = addstock_df['barcode'].apply(str)
+    addstock_df = addstock_df.fillna(0)
 
     report_df,error_all,error_no_person = cal_error_stock(df_stock,addstock_df)
 
