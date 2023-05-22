@@ -41,7 +41,7 @@ def cal_error_stock(df_stock,addstock_df):
 
     error_no_person = sum(report_df_noperson['error']*report_df_noperson['price'])
     
-    report_df['error'] = report_df['error'].astype(int)
+    report_df['error'] = -1*report_df['error'].astype(int)
     
     return report_df,error_all,error_no_person
 
