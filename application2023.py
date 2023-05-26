@@ -23,8 +23,8 @@ def capture(date,id,total):
     cv2.imwrite(f'captures/{date}_{id}_{total}.png', frame)
     vid.release()
     
-def capture2(date,id,total):
-    vid = cv2.VideoCapture(2)
+def capture2(i,date,id,total):
+    vid = cv2.VideoCapture(i)
     ret, frame = vid.read()
     cv2.imwrite(f'captures/products_{date}_{id}_{total}.png', frame)
     vid.release()
@@ -182,10 +182,13 @@ def save_history2(Historys,time_now,date_now):
                 doc_ref.set(H)
             capture(f'{str(date_now)}.{str(time_now)}',Historys['customer'],Historys['total'])
             try:
-                capture2(f'{str(date_now)}.{str(time_now)}',Historys['customer'],Historys['total'])
+                capture2(1,f'{str(date_now)}.{str(time_now)}',Historys['customer'],Historys['total'])
                 
             except:
-                pass           
+                try:
+                    capture2(2,f'{str(date_now)}.{str(time_now)}',Historys['customer'],Historys['total'])
+                except:
+                    pass           
             return 'complete'
         except Exception as e:
             print(e)
